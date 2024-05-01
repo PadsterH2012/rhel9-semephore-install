@@ -15,12 +15,22 @@ DB_PORT="3306"
 DB_NAME="semaphore_db"
 
 # Update the system and install necessary packages
-sudo yum update -y
-sudo yum install -y wget expect mariadb-server jq
+echo "Updating system..."
+sudo /usr/bin/dnf update -y --verbose
+sudo /usr/bin/dnf install -y wget expect mariadb-server jq
 
-# Install EPEL repository and Ansible
-sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-sudo dnf install -y ansible
+# Attempt to install EPEL repository
+echo "Installing EPEL repository..."
+sudo /usr/bin/dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
+# Verify EPEL installation and install Ansible
+if sudo /usr/bin/dnf repolist | grep -q "epel"; then
+    echo "EPEL repository has been enabled successfully."
+    sudo /usr/bin/dnf install -y ansible --verbose
+else
+    echo "Failed to enable EPEL repository."
+    exit 1
+fi
 
 # Start and enable MariaDB service
 sudo systemctl enable --now mariadb.service
