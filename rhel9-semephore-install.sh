@@ -40,86 +40,87 @@ sudo yum install -y semaphore_latest.rpm
 
 # Place the pre-defined config.json into the correct location
 sudo mkdir -p /etc/semaphore  # Ensure the directory exists
-sudo tee /etc/semaphore/config.json > /dev/null <<EOF
+
+sudo bash -c "cat > /etc/semaphore/config.json <<EOF
 {
-    "mysql": {
-        "host": "127.0.0.1:3306",
-        "user": "root",
-        "pass": "P0w3rPla72012@@",
-        "name": "semaphore_db",
-        "options": null
+    \"mysql\": {
+        \"host\": \"${DB_HOST}:${DB_PORT}\",
+        \"user\": \"root\",
+        \"pass\": \"${DB_ROOT_PASSWORD}\",
+        \"name\": \"${DB_NAME}\",
+        \"options\": null
     },
-    "bolt": {
-        "host": "",
-        "user": "",
-        "pass": "",
-        "name": "",
-        "options": null
+    \"bolt\": {
+        \"host\": \"\",
+        \"user\": \"\",
+        \"pass\": \"\",
+        \"name\": \"\",
+        \"options\": null
     },
-    "postgres": {
-        "host": "",
-        "user": "",
-        "pass": "",
-        "name": "",
-        "options": null
+    \"postgres\": {
+        \"host\": \"\",
+        \"user\": \"\",
+        \"pass\": \"\",
+        \"name\": \"\",
+        \"options\": null
     },
-    "dialect": "mysql",
-    "port": "",
-    "interface": "",
-    "tmp_path": "/tmp/semaphore",
-    "ssh_config_path": "",
-    "git_client": "",
-    "web_host": "",
-    "cookie_hash": "MpDg9LH+ktbQI3ajhMU1W+BP8wEqTwH0/s3eZF1JMcg=",
-    "cookie_encryption": "C6VMft6rAtmN62bkrpxTpl4/HYdJ7YZVItOAyIS5xb4=",
-    "access_key_encryption": "rm5LIkVDS+ZebU9MM3qzm6vR9WNn9gzzVzOPK/DZzrc=",
-    "email_alert": false,
-    "email_sender": "",
-    "email_host": "",
-    "email_port": "",
-    "email_username": "",
-    "email_password": "",
-    "email_secure": false,
-    "ldap_enable": false,
-    "ldap_binddn": "",
-    "ldap_bindpassword": "",
-    "ldap_server": "",
-    "ldap_searchdn": "",
-    "ldap_searchfilter": "",
-    "ldap_mappings": {
-        "dn": "",
-        "mail": "",
-        "uid": "",
-        "cn": ""
+    \"dialect\": \"mysql\",
+    \"port\": \"\",
+    \"interface\": \"\",
+    \"tmp_path\": \"/tmp/semaphore\",
+    \"ssh_config_path\": \"\",
+    \"git_client\": \"\",
+    \"web_host\": \"\",
+    \"cookie_hash\": \"MpDg9LH+ktbQI3ajhMU1W+BP8wEqTwH0/s3eZF1JMcg=\",
+    \"cookie_encryption\": \"C6VMft6rAtmN62bkrpxTpl4/HYdJ7YZVItOAyIS5xb4=\",
+    \"access_key_encryption\": \"rm5LIkVDS+ZebU9MM3qzm6vR9WNn9gzzVzOPK/DZzrc=\",
+    \"email_alert\": false,
+    \"email_sender\": \"\",
+    \"email_host\": \"\",
+    \"email_port\": \"\",
+    \"email_username\": \"\",
+    \"email_password\": \"\",
+    \"email_secure\": false,
+    \"ldap_enable\": false,
+    \"ldap_binddn\": \"\",
+    \"ldap_bindpassword\": \"\",
+    \"ldap_server\": \"\",
+    \"ldap_searchdn\": \"\",
+    \"ldap_searchfilter\": \"\",
+    \"ldap_mappings\": {
+        \"dn\": \"\",
+        \"mail\": \"\",
+        \"uid\": \"\",
+        \"cn\": \"\"
     },
-    "ldap_needtls": false,
-    "telegram_alert": false,
-    "telegram_chat": "",
-    "telegram_token": "",
-    "slack_alert": false,
-    "slack_url": "",
-    "rocketchat_alert": false,
-    "rocketchat_url": "",
-    "microsoft_teams_alert": false,
-    "microsoft_teams_url": "",
-    "oidc_providers": null,
-    "max_task_duration_sec": 0,
-    "max_parallel_tasks": 0,
-    "runner_registration_token": "",
-    "password_login_disable": false,
-    "non_admin_can_create_project": false,
-    "use_remote_runner": false,
-    "runner": {
-        "api_url": "",
-        "registration_token": "",
-        "config_file": "",
-        "one_off": false,
-        "webhook": "",
-        "max_parallel_tasks": 0
+    \"ldap_needtls\": false,
+    \"telegram_alert\": false,
+    \"telegram_chat\": \"\",
+    \"telegram_token\": \"\",
+    \"slack_alert\": false,
+    \"slack_url\": \"\",
+    \"rocketchat_alert\": false,
+    \"rocketchat_url\": \"\",
+    \"microsoft_teams_alert\": false,
+    \"microsoft_teams_url\": \"\",
+    \"oidc_providers\": null,
+    \"max_task_duration_sec\": 0,
+    \"max_parallel_tasks\": 0,
+    \"runner_registration_token\": \"\",
+    \"password_login_disable\": false,
+    \"non_admin_can_create_project\": false,
+    \"use_remote_runner\": false,
+    \"runner\": {
+        \"api_url\": \"\",
+        \"registration_token\": \"\",
+        \"config_file\": \"\",
+        \"one_off\": false,
+        \"webhook\": \"\",
+        \"max_parallel_tasks\": 0
     },
-    "global_integration_alias": ""
+    \"global_integration_alias\": \"\"
 }
-EOF
+EOF"
 
 echo "Semaphore configuration file created."
 
