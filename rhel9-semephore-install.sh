@@ -9,7 +9,6 @@ if [ -z "$DB_ROOT_PASSWORD" ]; then
 fi
 echo "DB_ROOT_PASSWORD is: ${DB_ROOT_PASSWORD}"
 
-
 # Define the database credentials
 DB_HOST="localhost"
 DB_PORT="3306"
@@ -18,6 +17,10 @@ DB_NAME="semaphore_db"
 # Update the system and install necessary packages
 sudo yum update -y
 sudo yum install -y wget expect mariadb-server jq
+
+# Install EPEL repository and Ansible
+sudo yum install -y epel-release
+sudo yum install -y ansible
 
 # Start and enable MariaDB service
 sudo systemctl enable --now mariadb.service
