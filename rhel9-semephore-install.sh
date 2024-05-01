@@ -33,6 +33,10 @@ wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VE
 # Install the downloaded package using yum
 sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 
+sudo firewall-cmd --permanent --add-port=3000/tcp
+sudo firewall-cmd --reload
+
+
 # # Create Semaphore configuration directory and file
 # sudo mkdir -p /etc/semaphore
 # cat << EOF > /etc/semaphore/config.json
