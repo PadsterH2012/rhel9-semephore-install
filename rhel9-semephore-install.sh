@@ -9,7 +9,7 @@ DB_ROOT_PASSWORD="P0w3rPla72012@@"  # Make sure to use a secure password
 
 # Update the system and install necessary packages
 sudo yum update -y
-sudo yum install -y wget expect mariadb-server
+sudo yum install -y wget mariadb-server
 
 # Start and enable MariaDB service
 sudo systemctl enable --now mariadb.service
@@ -35,44 +35,93 @@ sudo firewall-cmd --reload
 wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VERSION}/semaphore_${SEM_VERSION}_linux_amd64.rpm"
 sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 
-# Set up Semaphore using expect to automate interactive inputs and create admin user
-expect -c "
-spawn semaphore setup
-expect \"What database to use: \"
-send \"1\\r\"
-expect \"DB Hostname (default 127.0.0.1:3306): \"
-send \"${DB_HOST}:${DB_PORT}\\r\"
-expect \"DB User (default root): \"
-send \"root\\r\"
-expect \"DB Password:\"
-send \"${DB_ROOT_PASSWORD}\\r\"
-expect \"DB Name (default semaphore): \"
-send \"${DB_NAME}\\r\"
-expect \"Playbook path (default /tmp/semaphore): \"
-send \"\\r\"
-expect \"Web root URL:\"
-send \"\\r\"
-expect \"Enable email alerts? (yes/no) (default no):\"
-send \"no\\r\"
-expect \"Enable telegram alerts? (yes/no) (default no):\"
-send \"no\\r\"
-expect \"Enable slack alerts? (yes/no) (default no):\"
-send \"no\\r\"
-expect \"Enable Microsoft Team Channel alerts? (yes/no) (default no):\"
-send \"no\\r\"
-expect \"Enable LDAP authentication? (yes/no) (default no):\"
-send \"no\\r\"
-expect \"Config output directory (default /root):\"
-send \"\\r\"
-expect \"Username: \"
-send \"admin\\r\"
-expect \"Email: \"
-send \"admin@example.com\\r\"
-expect \"Your name: \"
-send \"Admin\\r\"
-expect \"Password: \"
-send \"Admin123\\r\"
-expect eof
-"
+# Place the pre-defined config.json into the correct location
+sudo mkdir -p /root/semaphore  # Ensure the directory exists
+sudo tee /root/semaphore/config.json > /dev/null <<EOF
+{
+    "mysql": {
+        "host": "127.0.0.1:3306",
+        "user": "root",
+        "pass": "P0w3rPla72012@@",
+        "name": "semaphore_db",
+        "options": null
+    },
+    "bolt": {
+        "host": "",
+        "user": "",
+        "pass": "",
+        "name": "",
+        "options": null
+    },
+    "postgres": {
+        "host": "",
+        "user": "",
+        "pass": "",
+        "name": "",
+        "options": null
+    },
+    "dialect": "mysql",
+    "port": "",
+    "interface": "",
+    "tmp_path": "/tmp/semaphore",
+    "ssh_config_path": "",
+    "git_client": "",
+    "web_host": "",
+    "cookie_hash": "MpDg9LH+ktbQI3ajhMU1W+BP8wEqTwH0/s3eZF1JMcg=",
+    "cookie_encryption": "C6VMft6rAtmN62bkrpxTpl4/HYdJ7YZVItOAyIS5xb4=",
+    "access_key_encryption": "rm5LIkVDS+ZebU9MM3qzm6vR9WNn9gzzVzOPK/DZzrc=",
+    "email_alert": false,
+    "email_sender": "",
+    "email_host": "",
+    "email_port": "",
+    "email_username": "",
+    "email_password": "",
+    "email_secure": false,
+    "ldap_enable": false,
+    "ldap_binddn": "",
+    "ldap_bindpassword": "",
+    "ldap_server": "",
+    "ldap_searchdn": "",
+    "ldap_searchfilter": "",
+    "ldap_mappings": {
+        "dn": "",
+        "mail": "",
+        "uid": "",
+        "cn": ""
+    },
+    "ldap_needtls": false,
+    "telegram_alert": false,
+    "telegram_chat": "",
+    "telegram_token": "",
+    "slack_alert": false,
+    "slack_url": "",
+    "rocketchat_alert": false,
+    "rocketchat_url": "",
+    "microsoft_teams_alert": false,
+    "microsoft_teams_url": "",
+    "oidc_providers": null,
+    "max_task_duration_sec": 0,
+    "max_parallel_tasks": 0,
+    "runner_registration_token": "",
+    "password_login_disable": false,
+    "non_admin_can_create_project": false,
+    "use_remote_runner": false,
+    "runner": {
+        "api_url": "",
+        "registration_token": "",
+        "config_file": "",
+        "one_off": false,
+        "webhook": "",
+        "max_parallel_tasks": 0
+    },
+    "global_integration_alias": ""
+}
+EOF
+
+echo "Semaphore configuration file created."
+
+# Start and enable Semaphore service
+sudo systemctl daemon-reload
+sudo systemctl enable --now semaphore
 
 echo "Semaphore setup completed and service started."
