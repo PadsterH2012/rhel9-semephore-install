@@ -21,9 +21,13 @@ sudo yum install mariadb-server.x86_64 -y
 # Enable and start MariaDB service
 sudo systemctl enable --now mariadb.service
 
-# Secure MariaDB installation
-echo "Please follow the on-screen instructions to secure your MariaDB installation:"
-sudo mysql_secure_installation
+# Non-interactive secure MariaDB installation
+sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('${DB_PASSWORD}') WHERE User = 'root';"
+sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
+sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+sudo mysql -e "DROP DATABASE IF EXISTS test;"
+sudo mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+sudo mysql -e "FLUSH PRIVILEGES;"
 
 # Download the specified version of Semaphore
 wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VERSION}/semaphore_${SEM_VERSION}_linux_amd64.rpm"
