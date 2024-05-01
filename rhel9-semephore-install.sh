@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# Prompt for the database root password
-read -sp "Enter the MariaDB root password: " DB_ROOT_PASSWORD
-echo # new line
+# Check if a password is passed as an argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 <db_root_password>"
+    exit 1
+fi
+
+DB_ROOT_PASSWORD=$1
 
 # Define the database credentials
 DB_HOST="localhost"
