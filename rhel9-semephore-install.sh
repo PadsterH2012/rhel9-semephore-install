@@ -14,7 +14,7 @@ SEM_SESSION_TIMEOUT="1800"  # Session timeout in seconds
 
 # Update the system
 sudo yum update -y
-sudo yum install mariadb-server.x86_64 expect -y
+sudo yum install nano mariadb-server.x86_64 expect -y
 
 # Enable and start MariaDB service
 sudo systemctl enable --now mariadb.service
