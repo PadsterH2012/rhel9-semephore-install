@@ -3,6 +3,15 @@
 # Define the version of Semaphore
 SEM_VERSION="2.9.75"
 
+# Define database settings
+DB_HOST="localhost"
+DB_PORT="3306"
+DB_NAME="semaphore_db"
+DB_USER="semaphore_user"
+DB_PASSWORD="your_password"
+SEM_PORT="3000"
+SEM_SESSION_TIMEOUT="1800"  # Timeout in seconds
+
 # Update the system
 sudo yum update -y
 
@@ -22,31 +31,20 @@ wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VE
 # Install the downloaded package using yum
 sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 
-# Configuration for Semaphore
-echo "Please enter the configuration details for Semaphore:"
-read -p "Port: " SEM_PORT
-read -p "MySQL Host (e.g., localhost): " SEM_MYSQL_HOST
-read -p "MySQL Port (default 3306): " SEM_MYSQL_PORT
-read -p "MySQL Database Name: " SEM_DB_NAME
-read -p "MySQL User: " SEM_DB_USER
-read -p "MySQL Password: " SEM_DB_PASSWORD
-read -p "Session Timeout (in seconds): " SEM_SESSION_TIMEOUT
-
 # Create Semaphore configuration directory and file
 sudo mkdir -p /etc/semaphore
-cat << EOF > /tmp/config.json
+cat << EOF > /etc/semaphore/config.json
 {
   "port": "${SEM_PORT}",
   "mysql": {
-    "host": "${SEM_MYSQL_HOST}:${SEM_MYSQL_PORT}",
-    "user": "${SEM_DB_USER}",
-    "pass": "${SEM_DB_PASSWORD}",
-    "name": "${SEM_DB_NAME}"
+    "host": "${DB_HOST}:${DB_PORT}",
+    "user": "${DB_USER}",
+    "pass": "${DB_PASSWORD}",
+    "name": "${DB_NAME}"
   },
   "sessionTimeout": ${SEM_SESSION_TIMEOUT}
 }
 EOF
-sudo cp /tmp/config.json /etc/semaphore/config.json
 
 # Create the Semaphore systemd service file
 sudo tee /etc/systemd/system/semaphore.service > /dev/null <<EOF
