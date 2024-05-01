@@ -1,15 +1,17 @@
 #!/bin/bash
 
-# Define the version of Semaphore and database credentials
-SEM_VERSION="2.9.75"
+# Prompt for the database root password
+read -sp "Enter the MariaDB root password: " DB_ROOT_PASSWORD
+echo # new line
+
+# Define the database credentials
 DB_HOST="localhost"
 DB_PORT="3306"
 DB_NAME="semaphore_db"
-DB_ROOT_PASSWORD="P0w3rPla72012@@"  # Make sure to use a secure password
 
 # Update the system and install necessary packages
 sudo yum update -y
-sudo yum install -y wget mariadb-server
+sudo yum install -y wget expect mariadb-server jq
 
 # Start and enable MariaDB service
 sudo systemctl enable --now mariadb.service
@@ -31,9 +33,10 @@ echo "MariaDB is now secured."
 sudo firewall-cmd --permanent --add-port=3000/tcp
 sudo firewall-cmd --reload
 
-# Download and install Semaphore
-wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VERSION}/semaphore_${SEM_VERSION}_linux_amd64.rpm"
-sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
+# Fetch the latest release of Semaphore from GitHub and install it
+SEM_VERSION_URL=$(curl -s https://api.github.com/repos/ansible-semaphore/semaphore/releases/latest | jq -r '.assets[] | select(.name | endswith("_linux_amd64.rpm")) | .browser_download_url')
+wget "$SEM_VERSION_URL" -O semaphore_latest.rpm
+sudo yum install -y semaphore_latest.rpm
 
 # Place the pre-defined config.json into the correct location
 sudo mkdir -p /etc/semaphore  # Ensure the directory exists
