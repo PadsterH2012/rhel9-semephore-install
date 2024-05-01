@@ -62,8 +62,13 @@ sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 # send \"no\\r\"
 # expect eof
 # "
+# Add an admin user to Semaphore
+semaphore user add --admin --login admin --name admin --email admin@example.com --password Admin123
 
-# # Start and enable Semaphore service
-# sudo systemctl daemon-reload
-# sudo systemctl enable --now semaphore
-# echo "Semaphore setup completed and service started."
+# Start and enable Semaphore service
+sudo systemctl daemon-reload
+sudo systemctl enable --now semaphore
+
+
+
+echo "Semaphore setup completed and admin user created. Service started."
