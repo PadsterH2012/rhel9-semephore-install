@@ -8,6 +8,13 @@ if [ -z "$DB_ROOT_PASSWORD" ]; then
     exit 1
 fi
 
+# Optional: Add a debug flag to control output of sensitive information
+DEBUG_MODE=${2:-"no"}  # Default to "no" if not provided
+
+if [ "$DEBUG_MODE" = "yes" ]; then
+    echo "Debug: DB_ROOT_PASSWORD is set to '${DB_ROOT_PASSWORD}'"
+fi
+
 # Define the database credentials
 DB_HOST="localhost"
 DB_PORT="3306"
