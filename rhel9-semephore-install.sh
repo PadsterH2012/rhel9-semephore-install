@@ -17,12 +17,12 @@ sudo systemctl enable --now mariadb.service
 # Secure MariaDB and set the root password non-interactively
 sudo mysql -u root <<-EOF
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${DB_ROOT_PASSWORD}');
-FLUSH PRIVILEGES;
 DELETE FROM mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 FLUSH PRIVILEGES;
+CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 EOF
 
 echo "MariaDB is now secured."
@@ -35,40 +35,44 @@ sudo firewall-cmd --reload
 wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VERSION}/semaphore_${SEM_VERSION}_linux_amd64.rpm"
 sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 
-# # Set up Semaphore using expect to automate interactive inputs
-# expect -c "
-# spawn semaphore setup
-# expect \"What database to use: \"
-# send \"1\\r\"
-# expect \"DB Hostname (default 127.0.0.1:3306): \"
-# send \"${DB_HOST}:${DB_PORT}\\r\"
-# expect \"DB User (default root): \"
-# send \"root\\r\"
-# expect \"DB Password:\"
-# send \"${DB_ROOT_PASSWORD}\\r\"
-# expect \"DB Name (default semaphore): \"
-# send \"${DB_NAME}\\r\"
-# expect \"Playbook path (default /tmp/semaphore): \"
-# send \"\\r\"
-# expect \"Web root URL:\"
-# send \"\\r\"
-# expect \"Enable email alerts? (yes/no) (default no):\"
-# send \"no\\r\"
-# expect \"Enable telegram alerts? (yes/no) (default no):\"
-# send \"no\\r\"
-# expect \"Enable slack alerts? (yes/no) (default no):\"
-# send \"no\\r\"
-# expect \"Enable Microsoft Team Channel alerts? (yes/no) (default no):\"
-# send \"no\\r\"
-# expect eof
-# "
-# Add an admin user to Semaphore
-semaphore user add --admin --login admin --name admin --email admin@example.com --password Admin123
+# Set up Semaphore using expect to automate interactive inputs and create admin user
+expect -c "
+spawn semaphore setup
+expect \"What database to use: \"
+send \"1\\r\"
+expect \"DB Hostname (default 127.0.0.1:3306): \"
+send \"${DB_HOST}:${DB_PORT}\\r\"
+expect \"DB User (default root): \"
+send \"root\\r\"
+expect \"DB Password:\"
+send \"${DB_ROOT_PASSWORD}\\r\"
+expect \"DB Name (default semaphore): \"
+send \"${DB_NAME}\\r\"
+expect \"Playbook path (default /tmp/semaphore): \"
+send \"\\r\"
+expect \"Web root URL:\"
+send \"\\r\"
+expect \"Enable email alerts? (yes/no) (default no):\"
+send \"no\\r\"
+expect \"Enable telegram alerts? (yes/no) (default no):\"
+send \"no\\r\"
+expect \"Enable slack alerts? (yes/no) (default no):\"
+send \"no\\r\"
+expect \"Enable Microsoft Team Channel alerts? (yes/no) (default no):\"
+send \"no\\r\"
+expect \"Enable LDAP authentication? (yes/no) (default no):\"
+send \"no\\r\"
+expect \"Config output directory (default /root):\"
+send \"\\r\"
+expect \"Username:\"
+send \"admin\\r\"
+expect \"Email:\"
+send \"admin@example.com\\r\"
+expect \"Your name:\"
+send \"Admin\\r\"
+expect \"Password:\"
+send \"Admin123\\r\"
+expect eof
+"
 
-# Start and enable Semaphore service
-sudo systemctl daemon-reload
-sudo systemctl enable --now semaphore
-
-
-
-echo "Semaphore setup completed and admin user created. Service started."
+echo "Semaphore setup completed and service started."
