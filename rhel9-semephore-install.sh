@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Check if a password is passed as an argument
-if [ -z "$1" ]; then
-    echo "Usage: $0 <db_root_password>"
+# Get the database root password from the first script argument
+DB_ROOT_PASSWORD=$1
+
+if [ -z "$DB_ROOT_PASSWORD" ]; then
+    echo "Usage: $0 <DB_ROOT_PASSWORD>"
     exit 1
 fi
-
-DB_ROOT_PASSWORD=$1
 
 # Define the database credentials
 DB_HOST="localhost"
