@@ -5,7 +5,7 @@ SEM_VERSION="2.9.75"
 DB_HOST="localhost"
 DB_PORT="3306"
 DB_NAME="semaphore_db"
-DB_ROOT_PASSWORD="your_root_password"  # Make sure to use a secure password
+DB_ROOT_PASSWORD="P0w3rPla72012@@"  # Make sure to use a secure password
 
 # Update the system and install necessary packages
 sudo yum update -y
