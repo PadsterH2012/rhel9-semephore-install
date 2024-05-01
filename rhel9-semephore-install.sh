@@ -120,7 +120,7 @@ EOF
 
 echo "Semaphore configuration file created."
 
- Create the Semaphore systemd service file
+#Create the Semaphore systemd service file
 sudo bash -c 'cat > /etc/systemd/system/semaphore.service <<-EOF
 [Unit]
 Description=Semaphore Ansible
