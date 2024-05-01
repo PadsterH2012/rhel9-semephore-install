@@ -143,4 +143,6 @@ EOF'
 sudo systemctl daemon-reload
 sudo systemctl enable --now semaphore
 
+semaphore user add --admin --login admin --name admin --email admin@example.com --password Admin123 --config /etc/semaphore/config.json
+
 echo "Semaphore setup completed and service started."
