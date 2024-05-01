@@ -14,9 +14,7 @@ SEM_SESSION_TIMEOUT="1800"  # Session timeout in seconds
 
 # Update the system
 sudo yum update -y
-
-# Install MariaDB Server
-sudo yum install mariadb-server.x86_64 -y
+sudo yum install mariadb-server.x86_64 expect -y
 
 # Enable and start MariaDB service
 sudo systemctl enable --now mariadb.service
@@ -50,6 +48,38 @@ cat << EOF > /etc/semaphore/config.json
 }
 EOF
 
+# Create a system user 'semaphore' with no login shell
+sudo useradd -r -M -s /bin/false semaphore
+sudo chown -R semaphore:semaphore /etc/semaphore
+
+# Automate semaphore setup with expect
+expect -c "
+spawn semaphore setup
+expect \"What database to use: \"
+send \"1\\r\"
+expect \"DB Hostname (default 127.0.0.1:3306): \"
+send \"${DB_HOST}:${DB_PORT}\\r\"
+expect \"DB User (default root): \"
+send \"${DB_USER}\\r\"
+expect \"DB Password:\"
+send \"${DB_PASSWORD}\\r\"
+expect \"DB Name (default semaphore): \"
+send \"${DB_NAME}\\r\"
+expect \"Playbook path (default /tmp/semaphore): \"
+send \"\\r\"
+expect \"Web root URL:\"
+send \"\\r\"
+expect \"Enable email alerts?\"
+send \"no\\r\"
+expect \"Enable telegram alerts?\"
+send \"no\\r\"
+expect \"Enable slack alerts?\"
+send \"no\\r\"
+expect \"Enable LDAP authentication?\"
+send \"no\\r\"
+expect eof
+"
+
 # Create the Semaphore systemd service file
 sudo tee /etc/systemd/system/semaphore.service > /dev/null <<EOF
 [Unit]
@@ -60,7 +90,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecReload=/bin/kill -HUP \$MAINPID
+User=semaphore
+Group=semaphore
 ExecStart=/bin/semaphore service --config=/etc/semaphore/config.json
 SyslogIdentifier=semaphore
 Restart=always
