@@ -8,9 +8,9 @@ DB_HOST="localhost"
 DB_PORT="3306"
 DB_NAME="semaphore_db"
 DB_USER="semaphore_user"
-DB_PASSWORD="your_password"
+DB_PASSWORD="your_password" # Ensure this is a secure password
 SEM_PORT="3000"
-SEM_SESSION_TIMEOUT="1800"  # Timeout in seconds
+SEM_SESSION_TIMEOUT="1800"  # Session timeout in seconds
 
 # Update the system
 sudo yum update -y
@@ -22,7 +22,7 @@ sudo yum install mariadb-server.x86_64 -y
 sudo systemctl enable --now mariadb.service
 
 # Non-interactive secure MariaDB installation
-sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('${DB_PASSWORD}') WHERE User = 'root';"
+sudo mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${DB_PASSWORD}');"
 sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
 sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DROP DATABASE IF EXISTS test;"
