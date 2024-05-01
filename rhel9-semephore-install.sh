@@ -40,9 +40,20 @@ sudo firewall-cmd --permanent --add-port=3000/tcp
 sudo firewall-cmd --reload
 
 # Fetch the latest release of Semaphore from GitHub and install it
-SEM_VERSION_URL=$(curl -s https://api.github.com/repos/ansible-semaphore/semaphore/releases/latest | jq -r '.assets[] | select(.name | endswith("_linux_amd64.rpm")) | .browser_download_url')
-wget "$SEM_VERSION_URL" -O semaphore_latest.rpm
-sudo yum install -y semaphore_latest.rpm
+SEM_VERSION_URL=$(curl -sL https://api.github.com/repos/ansible-semaphore/semaphore/releases/latest | jq -r '.assets[] | select(.name | endswith("_linux_amd64.rpm")) | .browser_download_url')
+
+if [[ $SEM_VERSION_URL == http* ]]; then
+    wget "$SEM_VERSION_URL" -O semaphore_latest.rpm
+    if [ -f semaphore_latest.rpm ]; then
+        sudo yum install -y semaphore_latest.rpm
+    else
+        echo "Download failed: semaphore_latest.rpm not found."
+        exit 1
+    fi
+else
+    echo "Failed to retrieve valid URL for Semaphore. Please check the release structure on GitHub."
+    exit 1
+fi
 
 # Place the pre-defined config.json into the correct location
 sudo mkdir -p /etc/semaphore  # Ensure the directory exists
