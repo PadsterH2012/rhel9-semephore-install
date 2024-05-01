@@ -19,8 +19,8 @@ sudo yum update -y
 sudo yum install -y wget expect mariadb-server jq
 
 # Install EPEL repository and Ansible
-sudo yum install -y epel-release
-sudo yum install -y ansible
+sudo yum install epel-release -y
+sudo yum install ansible -y
 
 # Start and enable MariaDB service
 sudo systemctl enable --now mariadb.service
