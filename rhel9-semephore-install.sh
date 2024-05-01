@@ -36,8 +36,8 @@ wget "https://github.com/ansible-semaphore/semaphore/releases/download/v${SEM_VE
 sudo yum install -y "semaphore_${SEM_VERSION}_linux_amd64.rpm"
 
 # Place the pre-defined config.json into the correct location
-sudo mkdir -p /root/semaphore  # Ensure the directory exists
-sudo tee /root/semaphore/config.json > /dev/null <<EOF
+sudo mkdir -p /etc/semaphore  # Ensure the directory exists
+sudo tee /etc/semaphore/config.json > /dev/null <<EOF
 {
     "mysql": {
         "host": "127.0.0.1:3306",
@@ -120,7 +120,26 @@ EOF
 
 echo "Semaphore configuration file created."
 
-# Start and enable Semaphore service
+ Create the Semaphore systemd service file
+sudo bash -c 'cat > /etc/systemd/system/semaphore.service <<-EOF
+[Unit]
+Description=Semaphore Ansible
+Documentation=https://github.com/ansible-semaphore/semaphore
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/bin/semaphore service --config=/etc/semaphore/config.json
+SyslogIdentifier=semaphore
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# Reload systemd to recognize the new service and start Semaphore
 sudo systemctl daemon-reload
 sudo systemctl enable --now semaphore
 
